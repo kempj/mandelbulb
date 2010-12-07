@@ -1,5 +1,6 @@
 //#include <QtCore/QCoreApplication>
 #include <iostream>
+#include <fstream>
 #include<complex>
 
 using namespace std;
@@ -10,8 +11,10 @@ int iterate(float x, float y, float z);
 
 int main(int argc, char *argv[]){
 
+    ofstream sliceOut;
+    char filename[20];
     const int ASIZE = 128;
-    int coords[ASIZE][ASIZE][ASIZE];
+    //int coords[ASIZE][ASIZE];
     float front, back, left, right, top, bottom;
     float deltaX, deltaY, deltaZ;
 
@@ -21,17 +24,31 @@ int main(int argc, char *argv[]){
     deltaY = (top - bottom) / ASIZE;
     deltaZ = (back - front) / ASIZE;
 
-    for(int i = 0; i < ASIZE; i++) {//left -right
-       // cout << i << endl;
-        for(int j = 0; j < ASIZE; j++) {//bottom - top
-            for(int k = 0; k < ASIZE; k++) {// front - back
-                coords[i][j][k] = iterate(left + i*deltaX, bottom + j*deltaY, front + k*deltaZ);
+
+    //moving K outside to write each slice to file
+    for(int k = 0; k < ASIZE; k++) {// front - back
+	sprintf(filename,"slices/%d.dat",k+1);
+	sliceOut.open(filename);
+	if(!sliceOut.is_open()) {
+	    cout << "couldn't open file\n";
+	    return 0;
+	}
+	sliceOut << ASIZE << endl;
+	sliceOut << front + k*deltaZ << endl;
+	for(int i = 0; i < ASIZE; i++) {//left -right
+	    // cout << i << endl;
+	    for(int j = 0; j < ASIZE; j++) {//bottom - top
+		//coords[i][j]
+		sliceOut <<  iterate(left + i*deltaX, bottom + j*deltaY, front + k*deltaZ);
                 //if(coords[i][j][k] != -1)
                     //cout << coords[i][j][k] << ", ";
+
             }
-        }
+	    sliceOut << endl;
+	}
+	sliceOut.close();
     }
-    return 0;//a.exec();
+    return 0;
 }
 
 //Calculates the outermost edges of the fractal, must be called 6 times
@@ -52,7 +69,7 @@ int iterate(float Xin, float Yin, float Zin) {
     int n = 8;//order of the equation
 
 
-    while(iterCount < 40) {
+    while(iterCount < 10    ) {
         r = sqrt(x*x + y*y + z*z);
         theta = atan2(sqrt(x*x + y*y), z );
         phi = atan2(y,x);
