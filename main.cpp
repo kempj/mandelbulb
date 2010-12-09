@@ -43,7 +43,7 @@ int main(int argc, char *argv[]){
     for(int k = 0; k < ASIZE;) {// front - back
 	for(int i = 0; i < ASIZE; i++) {//left -right
 	    for(int j = 0; j < ASIZE; j++) {//bottom - top
-		sliceOut <<  iterate(left + i*deltaX, bottom + j*deltaY, front + k*deltaZ);
+		sliceOut <<  iterate(left + i*deltaX, bottom + j*deltaY, front + k*deltaZ) << " ";
             }
 	    sliceOut << endl;
 	}
